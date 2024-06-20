@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from typing import Optional
 
 import numpy as np
@@ -8,7 +7,11 @@ import numpy as np
 class Node:
 
     def __init__(
-            self, state, action: tuple, to_play: int, parent: Optional[Node] = None
+            self,
+            state,
+            to_play: int = 0,
+            action: tuple[int, int] = (-1, -1),
+            parent: Optional[Node] = None
     ):
         self.state = state
         self.action = action
@@ -54,7 +57,7 @@ class MCTS:
         """Search for the best action to take from the current state."""
         for _ in range(self.num_simulations):
             node = self._select()
-            if not node.state.is_terminal() and node.is_leaf():
+            if not node.state.is_terminal() and (node.is_leaf() and node.N > 0):
                 self._expand(node)
                 node = node.children[0]
             reward = self._playout(node)
@@ -72,7 +75,7 @@ class MCTS:
         """Expanding the node by adding all possible actions as children."""
         for action in node.state.legal_actions():
             new_state = node.state.step(action)
-            new_node = Node(new_state, action, 1 - node.to_play, parent=node)
+            new_node = Node(new_state, 1 - node.to_play, action, parent=node)
             node.children.append(new_node)
 
     def _playout(self, node: Node) -> float:
@@ -85,7 +88,7 @@ class MCTS:
 
     def _backpropagate(self, node: Node, reward: float) -> None:
         """Backpropagating the reward up the tree."""
-        while node is not None:
+        while True:
             node.N += 1
             node.reward_sum += reward
             node.Q = node.reward_sum / node.N
