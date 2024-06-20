@@ -50,23 +50,20 @@ class TicTacToe(State):
 
     def legal_actions(self) -> list:
         board = self.board.reshape(2, 9)
-        return [
-            (i, j)
-            for i in range(3)
-            for j in range(3)
-            if board[0, i * 3 + j] == 0 and board[1, i * 3 + j] == 0
-        ]
+        return [divmod(i, 3) for i in range(9)
+                if board[0, i] == 0 and board[1, i] == 0]
 
     def step(self, action) -> TicTacToe:
         new_board = np.copy(self.board)
         new_board = new_board.reshape(2, 9)
         new_board[self.current_player, action[0] * 3 + action[1]] = 1
-        return TicTacToe(new_board.reshape(2, 3, 3), 1 - self.current_player)
+        return TicTacToe(new_board, 1 - self.current_player)
 
     def reward(self, player: int) -> int:
-        if self.winner() == player:
+        winner = self.winner()
+        if winner == player:
             return -1
-        if self.winner() == 1 - player:
+        if winner == 1 - player:
             return 1
         return 0
 
@@ -76,6 +73,6 @@ class TicTacToe(State):
             for mask in winner_mask:
                 if np.all(board[player][mask == 1] == 1):
                     return player
-        if np.all(board[0] + board[1] == 1):
+        if (len(self.actions) == 0):
             return 2
         return -1
