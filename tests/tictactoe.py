@@ -50,8 +50,7 @@ class TicTacToe(State):
 
     def legal_actions(self) -> list:
         board = self.board.reshape(2, 9)
-        return [divmod(i, 3) for i in range(9)
-                if board[0, i] == 0 and board[1, i] == 0]
+        return [divmod(i, 3) for i in range(9) if board[0, i] == 0 and board[1, i] == 0]
 
     def step(self, action) -> TicTacToe:
         new_board = np.copy(self.board)
@@ -73,6 +72,6 @@ class TicTacToe(State):
             for mask in winner_mask:
                 if np.all(board[player][mask == 1] == 1):
                     return player
-        if (len(self.actions) == 0):
+        if len(self.actions) == 0:
             return 2
         return -1

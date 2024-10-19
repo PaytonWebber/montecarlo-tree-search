@@ -7,11 +7,11 @@ import numpy as np
 class Node:
 
     def __init__(
-            self,
-            state,
-            to_play: int = 0,
-            action: tuple[int, int] = (-1, -1),
-            parent: Optional[Node] = None
+        self,
+        state,
+        to_play: int = 0,
+        action: tuple[int, int] = (-1, -1),
+        parent: Optional[Node] = None,
     ):
         self.state = state
         self.action = action
